@@ -7,4 +7,5 @@ def calc_weight(Tb, n_class=2):
     counts[i] += (Tb == i).sum()
   probs = counts / counts.sum()
   weights = probs ** (-1)
+  weights /= weights.sum()
   return weights
