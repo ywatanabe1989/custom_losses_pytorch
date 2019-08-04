@@ -14,5 +14,5 @@ def calc_weight(Tb, n_class):
     mask = (Tb == i)
     weights[mask] = recip_probs[i]
 
-  weights /= weights.sum() # normalize for stabilizing loss across batches
+  weights /= weights.mean() # normalize for stabilizing loss across batches
   return weights
