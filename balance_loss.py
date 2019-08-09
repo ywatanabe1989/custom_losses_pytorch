@@ -12,6 +12,7 @@ def balance_loss(loss, Tb, counts_arr=None, n_classes_int=None):
   # define counts_arr
   try:
     _ = counts_arr.shape
+    counts_arr = torch.Long(counts_arr)
   except:
     counts_arr = torch.zeros(n_classes_int)
     for i in range(n_classes_int):
@@ -24,7 +25,7 @@ def balance_loss(loss, Tb, counts_arr=None, n_classes_int=None):
   for i in range(n_classes_int):
     mask = (Tb == i)
     weights[mask] += recip_probs_arr[i]
-  weights_norm = weights / weights.mean()
+  weights_norm = (weights / weights.mean()).to(loss.dtype).to(loss.device)
   loss *= weights_norm
   return loss
   
