@@ -22,7 +22,9 @@ class PinballLoss():
         loss = loss.mean()
 
       return loss
+    
 '''
+## Plot loss function
 y = torch.tensor(np.arange(1000), dtype=torch.float)/10.
 t = torch.tensor(np.ones(1000), dtype=torch.float) * 50
 
@@ -30,4 +32,13 @@ criterion = PinballLoss(quantile=0.05)
 error, loss = criterion(y, t)
 import matplotlib.pyplot as plt
 plt.scatter(error, loss)
+'''
+
+'''
+## Usage
+from pinball_loss import PinballLoss
+...
+￼criterion = PinballLoss(quantile=0.05) # just like nn.MSELoss()
+...
+loss = criterion(output, target, reduction='sum')
 '''
