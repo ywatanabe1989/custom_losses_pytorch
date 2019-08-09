@@ -1,5 +1,6 @@
 # custom_losses_pytorch
 PInball Loss (a.k.a Quantile Loss)
+balance_loss (function for tackling imbalanced data)
 
 # Usage
 from pinball_loss import PinballLoss
