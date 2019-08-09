@@ -1,7 +1,6 @@
 import torch
 
 class MultiTaskLoss(torch.nn.Module):
-
   def __init__(self, is_regression, reduction='none'):
     super(MultiTaskLoss, self).__init__()
     self.is_regression = is_regression
