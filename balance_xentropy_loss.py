@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class balance_xentropy_loss():
-  """Balance the sampling number disparity of the cross entropy loss
+  """Balance the disparity of sampling numbers with the cross entropy loss
 
   -- Example
   n_classes = 4
