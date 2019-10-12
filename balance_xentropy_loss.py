@@ -1,12 +1,12 @@
 import torch
 import torch.nn as nn
 
-class balance_xentropy_loss():
-  """Balance the disparity of sampling numbers with the cross entropy loss
+class BalanceCrossentropyLoss():
+  """Balance the sampling number disparity of the cross entropy loss
 
   -- Example
   n_classes = 4
-  balance_loss = balance_xentropy_loss(n_classes)
+  balance_loss = BalanceCrossEntropyLoss(n_classes)
   xentropy_criterion = nn.CrossEntropyLoss(reduction='none') # NOTE
 
   for _ in range(100):
@@ -40,7 +40,7 @@ class balance_xentropy_loss():
 
 if __name__ == '__main__':
   n_classes = 3
-  balance_loss = balance_xentropy_loss(n_classes)
+  balance_loss = BalanceCrossEntropyLoss(n_classes)
   loss_orig = torch.Tensor([1,1,1,1,1,1])
   loss = loss_orig.clone()
   targets = torch.LongTensor([0,0,0,1,1,2])
