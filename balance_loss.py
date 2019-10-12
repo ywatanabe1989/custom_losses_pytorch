@@ -1,56 +1,54 @@
-def balance_loss(loss, Tb, counts_arr=None, n_classes_int=None):
-  if not 'torch' in dir():
-    import torch
+import torch
+import torch.nn as nn
 
-  # define n_classes_int
-  if not n_classes_int:
-    try:
-      n_classes_int = len(counts_arr)
-    except:
-      n_classes_int = int(Tb.max())+1
+class balance_xentropy_loss():
+  """Balance the sampling number disparity of the cross entropy loss
 
-  # define counts_arr
-  try:
-    _ = counts_arr.shape
-    counts_arr = torch.FloatTensor(counts_arr)
-  except:
-    counts_arr = torch.zeros(n_classes_int)
-    for i in range(n_classes_int):
-      counts_arr[i] += (Tb == i).sum()
+  Example
+  n_classes = 4
+  balance_loss = balance_xentropy_loss(n_classes)
+  xentropy_criterion = nn.CrossEntropyLoss(reduction='none') # NOTE
 
-  weights = torch.zeros_like(Tb, dtype=torch.float)
-  probs_arr = 1. * counts_arr / counts_arr.sum()
-  non_zero_mask = (probs_arr > 0)
-  recip_probs_arr = torch.zeros_like(probs_arr)
-  recip_probs_arr[non_zero_mask] = probs_arr[non_zero_mask] ** (-1)
-  for i in range(n_classes_int):
-    mask = (Tb == i)
-    weights[mask] += recip_probs_arr[i]
-  weights_norm = (weights / weights.mean()).to(loss.dtype).to(loss.device)
-  loss *= weights_norm
-  return loss
+  for _ in range(100):
+    input = torch.randn(3, 5, requires_grad=True)
+    target = torch.empty(3, dtype=torch.long).random_(n_classes)
+    xentropy_loss = xentropy_criterion(input, target)
+    balanced_loss = balance_loss(xentropy_loss, target) # here, just after calculating the cross entropy loss
+    # print(balance_loss.n_samples_per_class)
+  """
+  def __init__(self, n_classes_int):
+    self.n_classes_int = n_classes_int
+    self.cum_n_samp_per_cls = torch.zeros(n_classes_int)
+
+  def __call__(self, loss, Tb):
+    # update counts arr
+    for i in range(len(self.cum_n_samp_per_cls)):
+      self.cum_n_samp_per_cls[i] += (Tb == i).sum()
+
+    weights = torch.zeros_like(Tb, dtype=torch.float)
+    probs_arr = 1. * self.cum_n_samp_per_cls / self.cum_n_samp_per_cls.sum()
+    non_zero_mask = (probs_arr > 0)
+    recip_probs_arr = torch.zeros_like(probs_arr)
+    recip_probs_arr[non_zero_mask] = probs_arr[non_zero_mask] ** (-1)
+    for i in range(self.n_classes_int):
+      mask = (Tb == i)
+      weights[mask] += recip_probs_arr[i]
+    weights_norm = (weights / weights.mean()).to(loss.dtype).to(loss.device)
+    loss *= weights_norm
+    return loss
+
 
 if __name__ == '__main__':
-  ## TEST ##
-  def test(loss, Tb, counts_arr=None, n_classes_int=None, title=None):
-    loss_orig = loss.clone()
-    balanced_loss = balance_loss(loss.clone(), Tb, counts_arr=counts_arr, n_classes_int=n_classes_int)
-    print()
-    print(title)
-    print('batched targets: {}'.format(Tb))
-    print('loss_orig: {}'.format(loss_orig))
-    print('counts_arr: {}'.format(counts_arr))
-    print('n_classes_int: {}'.format(n_classes_int))        
-    print('balanced_loss: {}'.format(balanced_loss))
-    if loss.mean() == balanced_loss.mean():
-      print('balanced_loss.mean() is the same as loss.mean()')
-    print()
-
-  loss = torch.Tensor([1,1,1,1,1,1])
-  Tb = torch.LongTensor([0,0,0,1,1,2])
-
-  test(loss, Tb, counts_arr=None,                n_classes_int=None, title='w/o counts nor n_classes_int')
-  test(loss, Tb, counts_arr=np.array([1, 2, 3]), n_classes_int=None, title='w/ counts, w/o n_classes_int')
-  test(loss, Tb, counts_arr=None,                n_classes_int=4,    title='w/ n_classes_int, w/o  counts_arr')
-  test(loss, Tb, counts_arr=np.array([1,2,3,4]), n_classes_int=4,    title='w/ both n_classes_int and counts_arr')
-  ##########
+  n_classes = 3
+  balance_loss = balance_xentropy_loss(n_classes)
+  loss_orig = torch.Tensor([1,1,1,1,1,1])
+  loss = loss_orig.clone()
+  targets = torch.LongTensor([0,0,0,1,1,2])
+  balanced_loss = balance_loss(loss, targets) # , cum_n_samp_per_cls=cum_n_samp_per_cls, n_classes_int=n_classes_int)
+  print('Original Loss {}'.format(loss_orig))
+  print('Balanced Loss {}'.format(balanced_loss))
+  print()
+  print('Original Loss mean {}'.format(loss_orig.mean()))
+  print('Balanced Loss mean {}'.format(balanced_loss.mean()))
+  print()
+  print('Cumulated n_classes for balancing {}'.format(balance_loss.cum_n_samp_per_cls))
