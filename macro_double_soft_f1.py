@@ -76,7 +76,7 @@ if __name__ == '__main__':
     y_hat = np.random.rand(BS)
 
     loss_tf = macro_double_soft_f1_tf(y, y_hat) # Written in Tensorflow
-    loss_torch = macro_double_soft_f1(y, y_hat) # Written in PyTorch
+    loss_torch = macro_double_soft_f1(torch.FloatTensor(y), torch.FloatTensor(y_hat)) # Written in PyTorch
 
     print('Macro Double Soft F1 Loss')
     print('Written in Tensorflow :{}'.format(loss_tf))
