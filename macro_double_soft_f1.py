@@ -30,7 +30,7 @@ def macro_double_soft_f1_tf(y, y_hat): # Written in Tensorflow
     return macro_cost
 
 
-def macro_double_soft_f1(y, y_hat): # Written in PyTorch
+def macro_double_soft_f1(y, y_hat, reduction='mean'): # Written in PyTorch
     """Compute the macro soft F1-score as a cost (average 1 - soft-F1 across all labels).
     Use probability values instead of binary predictions.
     This version uses the computation of soft-F1 for both positive and negative class for each label.
@@ -42,8 +42,14 @@ def macro_double_soft_f1(y, y_hat): # Written in PyTorch
     Returns:
         cost (scalar): value of the cost function for the batch
     """
-    # y = torch.FloatTensor(y)
-    # y_hat = torch.FloatTensor(y_hat)
+
+    # dtype = y_hat.dtype
+    # y = y.to(dtype)
+
+    # FloatTensor = torch.cuda.FloatTensor
+    # y = FloatTensor(y)
+    # y_hat = FloatTensor(y_hat)
+
 
     tp = (y_hat * y).sum(dim=0) # soft
     fp = (y_hat * (1-y)).sum(dim=0) # soft
@@ -56,7 +62,13 @@ def macro_double_soft_f1(y, y_hat): # Written in PyTorch
     cost_class0 = 1 - soft_f1_class0 # reduce 1 - soft-f1_class0 in order to increase soft-f1 on class 0
     cost = 0.5 * (cost_class1 + cost_class0) # take into account both class 1 and class 0
 
-    return cost
+    if reduction == 'none':
+        return cost
+
+    if reduction == 'mean':
+        macro_cost = cost.mean()
+        return macro_cost
+
 
 if __name__ == '__main__':
     BS = 64
