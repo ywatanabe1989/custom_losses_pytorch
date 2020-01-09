@@ -36,8 +36,8 @@ def macro_double_soft_f1(y, y_hat, reduction='mean'): # Written in PyTorch
     This version uses the computation of soft-F1 for both positive and negative class for each label.
 
     Args:
-        y (int): targets array of shape (BATCH_SIZE, N_LABELS)
-        y_hat (float): probability matrix from forward propagation of shape (BATCH_SIZE, N_LABELS)
+        y (torch.FloatTensor): targets array of shape (BATCH_SIZE, N_LABELS), including 0. and 1.
+        y_hat (torch.FloatTensor): probability matrix from forward propagation of shape (BATCH_SIZE, N_LABELS)
 
     Returns:
         cost (scalar): value of the cost function for the batch
