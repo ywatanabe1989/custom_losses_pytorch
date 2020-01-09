@@ -42,8 +42,8 @@ def macro_double_soft_f1(y, y_hat): # Written in PyTorch
     Returns:
         cost (scalar): value of the cost function for the batch
     """
-    y = torch.FloatTensor(y)
-    y_hat = torch.FloatTensor(y_hat)
+    # y = torch.FloatTensor(y)
+    # y_hat = torch.FloatTensor(y_hat)
 
     tp = (y_hat * y).sum(dim=0) # soft
     fp = (y_hat * (1-y)).sum(dim=0) # soft
