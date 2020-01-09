@@ -45,10 +45,10 @@ def macro_double_soft_f1(y, y_hat):
     y = torch.FloatTensor(y)
     y_hat = torch.FloatTensor(y_hat)
 
-    tp = (y_hat * y).sum(dim=0)
-    fp = (y_hat * (1-y)).sum(dim=0)
-    fn = ((1-y_hat) * y).sum(dim=0)
-    tn = ((1-y_hat) * (1-y)).sum(dim=0)
+    tp = (y_hat * y).sum(dim=0) # soft
+    fp = (y_hat * (1-y)).sum(dim=0) # soft
+    fn = ((1-y_hat) * y).sum(dim=0) # soft
+    tn = ((1-y_hat) * (1-y)).sum(dim=0) # soft
 
     soft_f1_class1 = 2*tp / (2*tp + fn + fp + 1e-16)
     soft_f1_class0 = 2*tn / (2*tn + fn + fp + 1e-16)
@@ -56,20 +56,15 @@ def macro_double_soft_f1(y, y_hat):
     cost_class0 = 1 - soft_f1_class0 # reduce 1 - soft-f1_class0 in order to increase soft-f1 on class 0
     cost = 0.5 * (cost_class1 + cost_class0) # take into account both class 1 and class 0
 
-    macro_cost = cost.mean() # average on all labels
-    return macro_cost
-
+    return cost
 
 if __name__ == '__main__':
     BS = 64
     y = np.random.randint(2, size=BS)
     y_hat = np.random.rand(BS)
 
-    ## Written in Tensorflow
-    loss_tf = macro_double_soft_f1_tf(y, y_hat)
-
-    ## Written in PyTorch
-    loss_torch = macro_double_soft_f1(y, y_hat)
+    loss_tf = macro_double_soft_f1_tf(y, y_hat) # Written in Tensorflow
+    loss_torch = macro_double_soft_f1(y, y_hat) # Written in PyTorch
 
     print('Macro Double Soft F1 Loss')
     print('Written in Tensorflow :{}'.format(loss_tf))
