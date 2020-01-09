@@ -2,7 +2,7 @@ import tensorflow as tf
 import torch
 
 
-def macro_double_soft_f1_tf(y, y_hat):
+def macro_double_soft_f1_tf(y, y_hat): # Written in Tensorflow
     # https://towardsdatascience.com/the-unknown-benefits-of-using-a-soft-f1-loss-in-classification-systems-753902c0105d
     """Compute the macro soft F1-score as a cost (average 1 - soft-F1 across all labels).
     Use probability values instead of binary predictions.
@@ -30,7 +30,7 @@ def macro_double_soft_f1_tf(y, y_hat):
     return macro_cost
 
 
-def macro_double_soft_f1(y, y_hat):
+def macro_double_soft_f1(y, y_hat): # Written in PyTorch
     """Compute the macro soft F1-score as a cost (average 1 - soft-F1 across all labels).
     Use probability values instead of binary predictions.
     This version uses the computation of soft-F1 for both positive and negative class for each label.
