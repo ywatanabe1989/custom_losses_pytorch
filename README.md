@@ -6,3 +6,5 @@ balance_loss (a function for tackling the classification of imbalanced-size data
 MultiTaskLoss
 
 PDFLoss
+
+MacroDoubleSoftF1Loss
