@@ -36,9 +36,10 @@ class LossBalancer():
         return loss
 
     def _update_n_sample_counter(self, Tb):
+        Tb_cpu = Tb.cpu()
         ## Update Counter of Sample Numbers on Each Class
         for i in range(len(self.cum_n_samp_per_cls)):
-            self.cum_n_samp_per_cls[i] += (Tb == i).sum()
+            self.cum_n_samp_per_cls[i] += (Tb_cpu == i).sum()
 
     def _update_weights(self, loss, Tb):
         ## Calculate Weights
