@@ -29,7 +29,7 @@ class LossBalancer():
         else:
             pass
 
-        self._update_weights(Tb)
+        self._update_weights(loss, Tb)
 
         ## Balancing the Loss
         loss *= self.weights_norm
@@ -40,7 +40,7 @@ class LossBalancer():
         for i in range(len(self.cum_n_samp_per_cls)):
             self.cum_n_samp_per_cls[i] += (Tb == i).sum()
 
-    def _update_weights(self, Tb):
+    def _update_weights(self, loss, Tb):
         ## Calculate Weights
         weights = torch.zeros_like(Tb, dtype=torch.float)
         probs_arr = 1. * self.cum_n_samp_per_cls / self.cum_n_samp_per_cls.sum()
