@@ -1,10 +1,10 @@
 # custom_losses_pytorch
-Pinball Loss (a.k.a Quantile Loss)
+- [x] Pinball Loss (or Quantile Loss)
 
-balance_loss (a function for tackling the classification of imbalanced-size data)
+- [x] Loss Balancer (a class for tackling the classification problem on imbalanced dataset)
 
-MultiTaskLoss
+- [x] MultiTaskLoss
 
-PDFLoss
+- [x] PDFLoss
 
-MacroDoubleSoftF1Loss
+- [x] MacroDoubleSoftF1Loss
