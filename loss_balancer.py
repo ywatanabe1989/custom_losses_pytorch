@@ -3,20 +3,20 @@ import torch.nn as nn
 
 
 class LossBalancer():
-    """Balance the sampling number disparity of the cross entropy loss
+    """Balance the cost originated from imbalanced dataset in a online manner.
 
-    -- Example
+    # Example
     n_classes = 4
-    balance_loss = LossBalancer(n_classes)
-    xentropy_criterion = nn.CrossEntropyLoss(reduction='none') # NOTE
+    balancer = LossBalancer(n_classes)
+    xentropy_criterion = nn.CrossEntropyLoss(reduction='none')
 
     for _ in range(100):
-      input = torch.randn(3, 5, requires_grad=True)
-      target = torch.empty(3, dtype=torch.long).random_(n_classes)
-      xentropy_loss = xentropy_criterion(input, target)
-      balanced_loss = balance_loss(xentropy_loss, target)
-      # here, just after calculating the cross entropy loss
-      # print(balance_loss.n_samples_per_class)
+        input = torch.randn(3, 5, requires_grad=True)
+        target = torch.empty(3, dtype=torch.long).random_(n_classes)
+        loss = xentropy_criterion(input, target)
+        balanced_loss = balancer(loss, target, train=True)
+        balanced_loss = balanced_loss.mean() # Loss should be scaler to backprop
+        # balanced_loss.backward() # when you train the model
     """
     def __init__(self, n_classes_int):
         self.n_classes_int = n_classes_int
@@ -51,19 +51,3 @@ class LossBalancer():
             mask = (Tb == i)
             weights[mask] += recip_probs_arr[i]
         self.weights_norm = (weights / weights.mean()).to(loss.dtype).to(loss.device)
-
-
-if __name__ == '__main__':
-    n_classes = 3
-    loss_balancer = LossBalancer(n_classes)
-    loss_orig = torch.Tensor([1,1,1,1,1,1])
-    loss = loss_orig.clone()
-    targets = torch.LongTensor([0,0,0,1,1,2])
-    balanced_loss = loss_balancer(loss, targets) # , cum_n_samp_per_cls=cum_n_samp_per_cls, n_classes_int=n_classes_int)
-    print('Original Loss {}'.format(loss_orig))
-    print('Balanced Loss {}'.format(balanced_loss))
-    print()
-    print('Original Loss mean {}'.format(loss_orig.mean()))
-    print('Balanced Loss mean {}'.format(balanced_loss.mean()))
-    print()
-    print('Cumulated n_classes for balancing {}'.format(loss_balancer.cum_n_samp_per_cls))
