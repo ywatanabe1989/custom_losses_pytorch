@@ -8,3 +8,5 @@
 - [x] PDFLoss
 
 - [x] MacroDoubleSoftF1Loss
+
+- [x] Elastic Loss (= L1 reguralization + L2 reguralization like sklearn's [ElasticNet](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html))
