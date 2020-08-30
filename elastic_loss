@@ -1,0 +1,26 @@
+import torch
+
+def L1_reguralization(model, lambda_l1=0.01):
+    lambda_l1 = torch.tensor(lambda_l1)
+    l1 = torch.tensor(0.).cuda()
+    for param in model.parameters():
+        l1 += torch.abs(param).sum()
+    return l1
+
+def L2_reguralization(model, lambda_l2=0.01):
+    lambda_l2 = torch.tensor(lambda_l2)
+    l2 = torch.tensor(0.).cuda()
+    for param in model.parameters():
+        l2 += torch.norm(param).sum()
+    return l2
+
+def elastic_reguralization(model, alpha=1.0, l1_ratio=0.5):
+    # a * L1 + b * L2
+    # alpha = a + b
+    # l1_ratio = a / (a + b)
+    L1 = L1_reguralization(model)
+    L2 = L2_reguralization(model)
+    a = alpha * l1_ratio
+    b = alpha * (1 - l1_ratio)
+    elastic_reguralization = a * L1 + b * L2
+    return elastic_reguralization
