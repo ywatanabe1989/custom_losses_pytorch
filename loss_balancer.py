@@ -20,7 +20,7 @@ class LossBalancer():
     """
     def __init__(self, n_classes_int):
         self.n_classes_int = n_classes_int
-        self.cum_n_samp_per_cls = torch.zeros(n_classes_int)
+        self.cum_n_samp_per_cls = torch.zeros(n_classes_int).cuda()
         self.weights_norm = torch.ones(n_classes_int) / n_classes_int
 
     def __call__(self, loss, Tb, train=True):
@@ -34,21 +34,3 @@ class LossBalancer():
         ## Balancing the Loss
         loss *= self.weights_norm
         return loss
-
-    def _update_n_sample_counter(self, Tb):
-        Tb_cpu = Tb.cpu()
-        ## Update Counter of Sample Numbers on Each Class
-        for i in range(len(self.cum_n_samp_per_cls)):
-            self.cum_n_samp_per_cls[i] += (Tb_cpu == i).sum()
-
-    def _update_weights(self, loss, Tb):
-        ## Calculate Weights
-        weights = torch.zeros_like(Tb, dtype=torch.float)
-        probs_arr = 1. * self.cum_n_samp_per_cls / self.cum_n_samp_per_cls.sum()
-        non_zero_mask = (probs_arr > 0)
-        recip_probs_arr = torch.zeros_like(probs_arr)
-        recip_probs_arr[non_zero_mask] = probs_arr[non_zero_mask] ** (-1)
-        for i in range(self.n_classes_int):
-            mask = (Tb == i)
-            weights[mask] += recip_probs_arr[i]
-        self.weights_norm = (weights / weights.mean()).to(loss.dtype).to(loss.device)
