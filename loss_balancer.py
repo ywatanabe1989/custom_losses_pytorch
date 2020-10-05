@@ -12,14 +12,13 @@ class LossBalancer():
     def __call__(self, loss, Tb, train=True):
         self.device = loss.device
         self.dtype = loss.dtype
-        # self.device = Tb.device
         Tb = Tb.to(self.device)
         
         if train is True:
             self._update_n_sample_counter(Tb)
             self._update_weights(loss, Tb)
 
-        ## Balancing the Loss
+        ## Balance the Loss
         loss *= self.weights_norm
         return loss
 
